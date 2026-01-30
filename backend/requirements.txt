@@ -1,0 +1,13 @@
+# Monitor110 Revival - Flask Backend Dependencies
+# Install with: pip install -r requirements.txt
+
+flask==3.0.0
+flask-cors==4.0.0
+vaderSentiment==3.3.2
+requests==2.31.0
+python-dotenv==1.0.0
+yfinance==0.2.36
+beautifulsoup4==4.12.3
+lxml==5.1.0
+google-genai
+APScheduler==3.11.2
