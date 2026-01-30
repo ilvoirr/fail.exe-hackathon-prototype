@@ -44,12 +44,14 @@ export default function BearishDashboard() {
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  const fetchData = async () => {
+ const fetchData = async () => {
     setLoading(true);
     try {
-      const res = await fetch('https://unnoting-tanya-boilingly.ngrok-free.dev/api/bearish', {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://unnoting-tanya-boilingly.ngrok-free.dev';
+      
+      const res = await fetch(`${API_BASE}/api/bearish`, {
         headers: {
-          'ngrok-skip-browser-warning': 'true',
+          'ngrok-skip-browser-warning': '69420',
           'Content-Type': 'application/json'
         }
       });
@@ -58,7 +60,7 @@ export default function BearishDashboard() {
       setData(jsonData);
       setLastUpdated(new Date());
     } catch (err) {
-      console.error(err);
+      console.error("Bearish Terminal Sync Error:", err);
     } finally {
       setLoading(false);
     }

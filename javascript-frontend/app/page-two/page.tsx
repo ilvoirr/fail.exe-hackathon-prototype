@@ -47,9 +47,12 @@ export default function BullishDashboard() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const res = await fetch('https://unnoting-tanya-boilingly.ngrok-free.dev/api/bullish', {
+      // 1. Pull from Environment Variable (falls back to hardcoded for safety)
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://unnoting-tanya-boilingly.ngrok-free.dev';
+      
+      const res = await fetch(`${API_BASE}/api/bullish`, {
         headers: {
-          'ngrok-skip-browser-warning': 'true',
+          'ngrok-skip-browser-warning': '69420', // Explicit bypass value
           'Content-Type': 'application/json'
         }
       });
@@ -58,7 +61,7 @@ export default function BullishDashboard() {
       setData(jsonData);
       setLastUpdated(new Date());
     } catch (err) {
-      console.error(err);
+      console.error("Bullish Terminal Sync Error:", err);
     } finally {
       setLoading(false);
     }
