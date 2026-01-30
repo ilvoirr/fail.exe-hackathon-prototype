@@ -1,0 +1,11 @@
+{
+  "users": {
+    "testuser": {
+      "chat_id": "894954513",
+      "watchlist": [
+        "Bitcoin",
+        "gold"
+      ]
+    }
+  }
+}
