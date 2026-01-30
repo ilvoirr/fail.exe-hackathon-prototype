@@ -1,0 +1,7 @@
+# Add to .gitignore
+PythonBackend/env
+PythonBackend/.env
+*.env
+.env.local
+__pycache__/
+*.pyc
