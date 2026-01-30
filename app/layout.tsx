@@ -6,8 +6,8 @@ import { LayoutContent } from './LayoutContent'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  title: 'Tata Capital',
-  description: '',
+  title: 'StockMonitor',
+  description: 'High Frequency Trading Dashboard',
 }
 
 export default function RootLayout({
@@ -21,7 +21,8 @@ export default function RootLayout({
         <head>
           <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
         </head>
-        <body className={`${inter.className} min-h-screen bg-white text-black`}>
+        {/* Changed bg-white to bg-black to match the dark theme */}
+        <body className={`${inter.className} min-h-screen bg-black text-white`}>
           <LayoutContent>{children}</LayoutContent>
         </body>
       </html>

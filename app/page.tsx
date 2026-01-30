@@ -1,17 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import {
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from "@clerk/nextjs";
-import { Button } from "@/components/ui/button";
+import { SignInButton, SignUpButton, SignedIn, SignedOut } from "@clerk/nextjs";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { IconArrowUpRight, IconTerminal2 } from "@tabler/icons-react";
 
+// --- Redirect Logic ---
 function RedirectToApp({ router }: { router: ReturnType<typeof useRouter> }) {
   useEffect(() => {
     router.push("/page-one");
@@ -19,147 +14,135 @@ function RedirectToApp({ router }: { router: ReturnType<typeof useRouter> }) {
   return null;
 }
 
-// Helper to get all page images from public
-function getPageImages(): string[] {
-  // Hardcode up to N, or fetch from server if SSR
-  // For hackathons, let's loop up to page20.png
-  const images = [];
-  for (let i = 1; i <= 20; i++) {
-    images.push(`/page${i}.png`);
-  }
-  return images;
-}
-
 export default function HomePage() {
   const router = useRouter();
-  const [navbarBg, setNavbarBg] = useState('#f0fce4');
 
-  // Dynamic navbar background (same as your template, keep logic)
+  // Mouse Parallax Logic
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const mouseXSpring = useSpring(x);
+  const mouseYSpring = useSpring(y);
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["12deg", "-12deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-12deg", "12deg"]);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const { clientX, clientY } = e;
+    const { innerWidth, innerHeight } = window;
+    const xPct = clientX / innerWidth - 0.5;
+    const yPct = clientY / innerHeight - 0.5;
+    x.set(xPct);
+    y.set(yPct);
+  };
+
+  // Clock
+  const [time, setTime] = useState("");
   useEffect(() => {
-    const handleScroll = () => {
-      const vh = window.innerHeight;
-      const maxScrollLimit = vh * 3.87;
-      if (window.scrollY > maxScrollLimit) {
-        window.scrollTo(0, maxScrollLimit);
-        return;
-      }
-      const navbarHeightPx = (6 / 100) * vh;
-      const scrollY = window.scrollY;
-      const navbarBottom = scrollY + navbarHeightPx;
-      if (navbarBottom >= vh * 2 || navbarBottom >= vh * 1) {
-        setNavbarBg('#ffffff');
-      } else {
-        setNavbarBg('#f0fce4');
-      }
-    };
-    window.addEventListener('scroll', handleScroll);
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
+    const interval = setInterval(() => {
+      setTime(new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' }));
+    }, 1000);
+    return () => clearInterval(interval);
   }, []);
 
-  // Detect which pageX.png exist in public by trying to load images
-  // This requires a little workaround: just render all, hidden if 404
-
-  const pageImages = getPageImages();
-
   return (
-    <div className="overflow-x-hidden">
-      {/* Signed in redirect */}
-      <SignedIn>
-        <RedirectToApp router={router} />
-      </SignedIn>
-
-      {/* Navbar CSS moved exactly */}
-      <style>
-        {`
-          @media (min-width: 1300px) and (max-width: 1400px) {
-            .only-1366 {
-              font-size: 1.6vh;
-            }
-          }
-          .navbar-transition {
-            transition: background-color 0.3s ease;
-          }
-        `}
-      </style>
+    <>
+      {/* Force override any global layout scrolling */}
+      <style jsx global>{`
+        html, body {
+          overflow: hidden;
+          height: 100%;
+          width: 100%;
+          margin: 0;
+          padding: 0;
+          overscroll-behavior: none;
+        }
+      `}</style>
 
       <div 
-        className="navbar-transition fixed top-0 left-0 w-full flex items-center justify-between h-[6vh] text-white px-4 md:px-8 z-50"
-        style={{ backgroundColor: navbarBg }}
+        onMouseMove={handleMouseMove}
+        className="fixed inset-0 h-[100dvh] w-screen bg-[#050505] text-[#e0e0e0] overflow-hidden flex flex-col justify-between selection:bg-white selection:text-black font-sans"
       >
-        <div className="flex items-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24" height="24" viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="text-[#48837e] w-[5vh] h-[5vh] md:w-[4.9vh] md:h-[4.9vh]"
+        <SignedIn>
+          <RedirectToApp router={router} />
+        </SignedIn>
+
+        {/* --- NOISE TEXTURE --- */}
+        <div className="absolute inset-0 z-0 opacity-[0.07] pointer-events-none mix-blend-overlay"
+             style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} 
+        />
+
+        {/* --- TOP BAR --- */}
+        <header className="relative z-20 w-full p-6 flex justify-between items-start text-[10px] md:text-xs font-mono uppercase tracking-widest text-neutral-500 shrink-0">
+          <div className="flex flex-col gap-1">
+            <span className="text-white font-bold">110 STOCK MONITOR</span>
+            <span>SYS.VER.4.0</span>
+          </div>
+          <div className="text-right flex flex-col gap-1">
+            <span className="text-white">{time}</span>
+            <span className="flex items-center justify-end gap-2">
+              <span className="animate-pulse w-1.5 h-1.5 bg-green-500 rounded-full"/> ONLINE
+            </span>
+          </div>
+        </header>
+
+        {/* --- CENTER STAGE --- */}
+        <main className="relative z-10 flex-1 min-h-0 flex items-center justify-center perspective-1000">
+          <motion.div 
+              style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+              className="relative flex items-center justify-center"
           >
-            <path d="M11 17h3v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3a3.16 3.16 0 0 0 2-2h1a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1h-1a5 5 0 0 0-2-4V3a4 4 0 0 0-3.2 1.6l-.3.4H11a6 6 0 0 0-6 6v1a5 5 0 0 0 2 4v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1z"/>
-            <path d="M16 10h.01"/>
-            <path d="M2 8v1a2 2 0 0 0 2 2h1"/>
-          </svg>
-          <h1 className="hidden md:inline-flex text-[1.6vw] font-semibold tracking-tight text-[#48837e] ml-3">
-            pageN.png in public folder + adjust navbar color manually
-          </h1>
-        </div>
-        <div className="flex items-center gap-3 md:gap-4">
+              <h1 className="text-[25vw] leading-none font-black text-neutral-900 absolute blur-sm select-none pointer-events-none transform -translate-z-10 translate-y-4">
+                  110
+              </h1>
+              <h1 className="text-[25vw] leading-none font-black tracking-tighter text-white mix-blend-difference select-none relative z-10">
+                  110
+              </h1>
+              <div className="absolute -right-4 md:-right-12 top-[20%] bg-white text-black text-[0.6rem] md:text-[0.8rem] font-bold px-2 md:px-3 py-1 font-mono uppercase transform translate-z-20 rotate-12 shadow-xl">
+                  Beta
+              </div>
+          </motion.div>
+        </main>
+
+        {/* --- BOTTOM CONTROLS --- */}
+        <footer className="relative z-20 w-full p-6 flex items-end justify-between shrink-0">
+          <div className="hidden md:block text-xs font-mono text-neutral-600 max-w-xs leading-relaxed">
+            CAUTION: UNAUTHORIZED ACCESS TO 110 MONITORING SYSTEMS IS STRICTLY PROHIBITED. ALL IP ADDRESSES LOGGED.
+          </div>
+
           <SignedOut>
-        <SignInButton forceRedirectUrl="/page-one">
-  <Button className="only-1366 bg-transparent text-[#48837e] hover:text-white hover:bg-[#48837e] md:text-[1.77vh] text-[4vw] px-3 md:px-4">
-    Login
-  </Button>
-</SignInButton>
+              <div className="flex flex-col gap-3 w-full md:w-auto">
+                  {/* SIGN UP BUTTON */}
+                  <SignUpButton mode="modal" forceRedirectUrl="/page-one">
+                      <button className="group relative w-full md:w-80 bg-white text-black h-14 flex items-center justify-between px-6 transition-all hover:bg-[#b8b8b8]">
+                          <span className="font-bold tracking-tight text-lg">SIGN UP</span>
+                          <IconArrowUpRight className="group-hover:rotate-45 transition-transform duration-300" />
+                      </button>
+                  </SignUpButton>
 
-<SignUpButton 
-  forceRedirectUrl="/page-one"
-  signInForceRedirectUrl="/page-one"
->
-  <Button className="only-1366 bg-white text-[#48837e] hover:bg-[#48837e] hover:text-white md:text-[1.77vh] text-[4vw] px-3 md:px-6">
-    Sign Up
-  </Button>
-</SignUpButton>
+                  {/* LOG IN / DEMO REVEAL BUTTON */}
+                  <SignInButton mode="modal" forceRedirectUrl="/page-one">
+                      <button className="group relative w-full md:w-80 h-12 overflow-hidden border border-white/20 text-xs font-mono uppercase tracking-widest bg-transparent hover:border-emerald-500/50 transition-colors">
+                          {/* Normal State */}
+                          <div className="absolute inset-0 flex items-center justify-between px-6 transition-transform duration-300 ease-in-out group-hover:-translate-y-full text-white/50 group-hover:text-white">
+                              <span>EXISTING USER</span>
+                              <span>[ LOG IN ]</span>
+                          </div>
 
+                          {/* Hover State (Demo Credentials) */}
+                          <div className="absolute inset-0 flex items-center justify-between px-6 translate-y-full transition-transform duration-300 ease-in-out group-hover:translate-y-0 bg-emerald-950/30 text-emerald-400 font-bold tracking-tight">
+                              <span className="flex items-center gap-2"><IconTerminal2 size={14}/> DEMO ID: test</span>
+                              <span>DEMO PW: test123</span>
+                          </div>
+                      </button>
+                  </SignInButton>
+              </div>
           </SignedOut>
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
-        </div>
+        </footer>
+        
+        {/* Grid Lines */}
+        <div className="absolute top-0 left-1/4 h-full w-[1px] bg-white/5 pointer-events-none" />
+        <div className="absolute top-0 right-1/4 h-full w-[1px] bg-white/5 pointer-events-none" />
+        <div className="absolute top-1/2 left-0 w-full h-[1px] bg-white/5 pointer-events-none" />
       </div>
-
-      {/* Renders all page images in /public/pageX.png as full-screen sections */}
-      {pageImages.map((src, i) => (
-        <PageImageSection src={src} key={i} />
-      ))}
-
-      {/* Spacer for footer if needed */}
-      <div style={{ height: "10vh" }}></div>
-    </div>
-  );
-}
-
-// A helper component to show .png only if found in public, fallback to nothing
-function PageImageSection({ src }: { src: string }) {
-  const [exists, setExists] = useState(true);
-  useEffect(() => {
-    // Check if image actually exists
-    const img = new window.Image();
-    img.src = src;
-    img.onload = () => setExists(true);
-    img.onerror = () => setExists(false);
-  }, [src]);
-  if (!exists) return null;
-  return (
-    <div className="w-screen h-screen">
-      <img
-        src={src}
-        alt={src}
-        className="w-full h-full object-cover"
-        draggable={false}
-      />
-    </div>
+    </>
   );
 }
