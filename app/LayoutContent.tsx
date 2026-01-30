@@ -32,7 +32,7 @@ const Logo = () => {
         animate={{ opacity: 1 }}
         className="text-[1.4vw] font-semibold tracking-tight text-white"
       >
-        Website Name
+        Monitor110
       </motion.span>
     </div>
   )
