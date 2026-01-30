@@ -162,7 +162,7 @@ export default function Page() {
           <div className="relative z-10 flex flex-col h-full">
             <div>
               <h3 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-indigo-400 italic tracking-tighter">TRADER'S DILEMMA</h3>
-              <p className="text-blue-400/30 text-xs font-mono mt-1">PSYCHOLOGY_LAYER_01</p>
+              <p className="text-blue-400/30 text-xs font-mono mt-1">psychology_layer_01</p>
             </div>
             <div className="flex-1 flex items-center justify-center -my-2 relative">
                {traderLottie ? (
