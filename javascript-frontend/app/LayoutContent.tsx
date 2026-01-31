@@ -94,7 +94,7 @@ const MobileRestrictedScreen = () => (
       DESKTOP <span className="text-red-600">ONLY</span>
     </h1>
     <p className="text-white/40 font-mono text-sm max-w-xs">
-      ERROR_CODE: MOBILE_DEVICE_DETECTED
+       MOBILE_DEVICE_DETECTED
       <br/>
       This trading terminal requires a larger display surface for data visualization.
     </p>
