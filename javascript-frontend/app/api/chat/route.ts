@@ -1,13 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
+
 export const runtime = 'edge'
 
 export async function POST(req: NextRequest) {
   try {
-    const MAX_CHARS = 900;
-    const maxTokens = 300;
+    // Increased to ~2500 chars to allow for structured analysis/lists
+    const MAX_CHARS = 2500; 
+    // Increased tokens to ~750 to match the character limit buffer
+    const maxTokens = 750;
+
     const baseSystemPrompt = {
       role: "system",
-      content: `Never reply with more than ${MAX_CHARS} characters. If you reach that, stop your answer immediately.`
+      content: `You are a logical Finance Advisor. Your responses must be based on objective analysis, risk assessment, and quantitative logic. 
+      Avoid vague emotional advice; focus on market principles, asset allocation, and data-driven insights.
+      
+      CRITICAL: Never reply with more than ${MAX_CHARS} characters. If you reach this limit, stop your answer immediately.`
     };
 
     const { messages } = await req.json()
@@ -22,7 +29,7 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile',
         messages: modMessages,
-        temperature: 0.7,
+        temperature: 0.5, // Slightly lowered for more consistent, logical "advisor" tone
         max_tokens: maxTokens,
         stream: true,
       }),

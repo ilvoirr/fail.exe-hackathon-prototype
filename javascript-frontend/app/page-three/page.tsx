@@ -84,7 +84,7 @@ export default function BearishDashboard() {
       <header className="flex-none mb-6 flex items-end justify-between z-20">
         <div className="flex items-center gap-6">
           <button 
-            onClick={() => router.back()} 
+            onClick={() => router.push('/page-one')} 
             className="group flex items-center gap-2 text-white/40 hover:text-white transition-colors"
           >
             <IconArrowLeft size={24} className="group-hover:-translate-x-1 transition-transform" />

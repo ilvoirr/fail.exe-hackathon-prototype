@@ -334,7 +334,7 @@ export default function PageFour() {
         {/* HEADER */}
         <header className="relative z-20 flex items-center justify-between p-8 border-b border-white/5 bg-black/40 backdrop-blur-2xl shrink-0">
           <div className="flex items-center gap-6">
-            <button onClick={() => router.back()} className="group flex items-center gap-2 text-white/30 hover:text-white transition-colors">
+            <button onClick={() => router.push('/page-one')} className="group flex items-center gap-2 text-white/30 hover:text-white transition-colors">
               <IconArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
             </button>
             {/* ... inside header ... */}
