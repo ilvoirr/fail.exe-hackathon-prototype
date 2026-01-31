@@ -4,7 +4,7 @@
 
 MONITOR 110 is a high-performance financial dashboard designed to bridge the gap between technical indicators and market psychology. By leveraging real-time sentiment mapping and voice-activated intelligence, it provides a command-center experience for modern asset management.
 
-![Main Interface](./javascript_frontend/public/1.png)
+![Main Interface](./javascript-frontend/public/1.png)
 
 ---
 
@@ -37,9 +37,9 @@ A zero-latency gateway for managing portfolios and configuring web-hooked alerts
 ## INTERFACE PREVIEW
 
 <div align="center">
-  <img src="./javascript_frontend/public/2.png" width="32%" />
-  <img src="./javascript_frontend/public/3.png" width="32%" />
-  <img src="./javascript_frontend/public/4.png" width="32%" />
+  <img src="./javascript-frontend/public/2.png" width="32%" />
+  <img src="./javascript-frontend/public/3.png" width="32%" />
+  <img src="./javascript-frontend/public/4.png" width="32%" />
 </div>
 
 ---
@@ -59,7 +59,7 @@ The system utilizes a custom "use client" architecture to manage real-time state
 
 ```bash
 # Navigate to the frontend directory
-cd javascript_frontend
+cd javascript-frontend
 
 # Install system dependencies
 npm install framer-motion lottie-react @tabler/icons-react
