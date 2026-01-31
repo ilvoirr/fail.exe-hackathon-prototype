@@ -1,30 +1,46 @@
 "use client"
 
 import React, { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion' // Added AnimatePresence
+import { motion, AnimatePresence } from 'framer-motion'
 import Lottie from 'lottie-react'
 import { useRouter } from 'next/navigation' 
 import { 
   IconArrowUpRight, 
   IconArrowDownRight, 
   IconActivity, 
-  IconBolt,
-  IconTrendingUp,
-  IconChartBar,
-  IconBell,
-  IconX // Added X icon for closing
+  IconBolt, 
+  IconTrendingUp, 
+  IconChartBar, 
+  IconBell, 
+  IconX,
+  IconPlus,
+  IconCheck
 } from '@tabler/icons-react'
+
+// ✅ Your Ngrok Backend URL
+const BACKEND_URL = 'https://unnoting-tanya-boilingly.ngrok-free.dev'; 
 
 export default function Page() {
   const router = useRouter();
 
+  // --- Animation States ---
   const [traderLottie, setTraderLottie] = useState(null);
   const [bullishLottie, setBullishLottie] = useState(null);
   const [bearLottie, setBearLottie] = useState(null); 
   const [bnbLottie, setBnbLottie] = useState(null); 
   
-  // --- New State for Fake Modal ---
+  // --- Modal & Form States ---
   const [showAlertModal, setShowAlertModal] = useState(false);
+  const [tgUsername, setTgUsername] = useState('');
+  const [tgChatId, setTgChatId] = useState('');
+  
+  // New States for Watchlist
+  const [isConnected, setIsConnected] = useState(false);
+  const [watchlist, setWatchlist] = useState<string[]>([]);
+  const [newKeyword, setNewKeyword] = useState('');
+  
+  const [status, setStatus] = useState('IDLE'); 
+  const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
     fetch('/blockchain-technology.json').then((res) => res.json()).then((data) => setTraderLottie(data));
@@ -32,6 +48,77 @@ export default function Page() {
     fetch('/email-marketing.json').then((res) => res.json()).then((data) => setBearLottie(data));
     fetch('/bnb-crypto-coin.json').then((res) => res.json()).then((data) => setBnbLottie(data));
   }, []);
+
+  // --- Step 1: Connect Telegram ---
+  const handleActivateAlerts = async () => {
+    if (!tgUsername || !tgChatId) {
+      setErrorMsg("Please fill in both fields");
+      return;
+    }
+    
+    setStatus('LOADING');
+    setErrorMsg('');
+
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/connect`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true' 
+        },
+        body: JSON.stringify({
+          username: tgUsername.replace('@', ''), 
+          chat_id: tgChatId
+        })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setStatus('SUCCESS');
+        setIsConnected(true);
+        // Load existing watchlist from server response
+        if (data.user && data.user.watchlist) {
+            setWatchlist(data.user.watchlist);
+        }
+      } else {
+        setStatus('ERROR');
+        setErrorMsg(data.error || "Connection refused");
+      }
+    } catch (err) {
+      console.error(err);
+      setStatus('ERROR');
+      setErrorMsg("Server unreachable");
+    }
+  };
+
+  // --- Step 2: Add to Watchlist ---
+  const handleAddToWatchlist = async () => {
+    if (!newKeyword) return;
+
+    try {
+        const res = await fetch(`${BACKEND_URL}/api/watchlist`, {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json',
+              'ngrok-skip-browser-warning': 'true'
+            },
+            body: JSON.stringify({
+              username: tgUsername.replace('@', ''),
+              keyword: newKeyword
+            })
+        });
+
+        const data = await res.json();
+        
+        if (data.success) {
+            setWatchlist(data.watchlist); // Update local list
+            setNewKeyword(''); // Clear input
+        }
+    } catch (err) {
+        console.error("Failed to add keyword", err);
+    }
+  };
 
   const topStocks = [
     { symbol: "NIFTY 50", price: "21,450", change: "+1.2%", color: "text-green-400" },
@@ -49,7 +136,7 @@ export default function Page() {
         style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} 
       />
 
-      {/* Top Ticker */}
+      {/* --- Top Ticker --- */}
       <div className="w-full bg-black/40 border border-white/10 rounded-2xl py-3 flex items-center z-10 shrink-0">
         <div className="px-4 border-r border-white/10 mr-4">
           <IconActivity className="text-white/50 w-5 h-5 animate-pulse" />
@@ -187,7 +274,7 @@ export default function Page() {
           </div>
         </motion.div>
 
-        {/* Card 02: Lightning Actions (Static Navigation) */}
+        {/* --- CARD 02: ACTIONS & ALERTS --- */}
         <div className="col-span-12 md:col-span-4 row-span-3 rounded-[2rem] bg-gradient-to-br from-purple-900/20 to-[#111] border border-white/5 p-6 flex flex-col relative group hover:border-purple-500/30 transition-all overflow-hidden">
           <div className="flex justify-between items-center mb-4 z-20">
             <div className="p-3 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 group-hover:rotate-12 transition-transform">
@@ -210,7 +297,7 @@ export default function Page() {
                 <button className="w-full py-3 rounded-xl bg-white text-black font-bold text-xs hover:bg-purple-400 hover:scale-[1.02] transition-all flex items-center justify-center gap-2">
                   <IconChartBar size={16} /> Portfolio
                 </button>
-                {/* Updated Alerts Button */}
+                {/* Opens the Modal */}
                 <button 
                   onClick={() => setShowAlertModal(true)}
                   className="w-full py-3 rounded-xl bg-white/5 text-white font-bold text-xs hover:bg-white/10 border border-white/10 transition-all backdrop-blur-sm flex items-center justify-center gap-2"
@@ -222,7 +309,7 @@ export default function Page() {
         </div>
       </div>
 
-      {/* --- FAKE MODAL FOR HACKATHON --- */}
+      {/* --- REVISED MODAL (Alerts + Watchlist) --- */}
       <AnimatePresence>
         {showAlertModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -242,7 +329,9 @@ export default function Page() {
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-50" />
               
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-black italic text-white tracking-tight">CONFIGURE ALERTS</h3>
+                <h3 className="text-xl font-black italic text-white tracking-tight">
+                  {isConnected ? 'MANAGE WATCHLIST' : 'CONFIGURE ALERTS'}
+                </h3>
                 <button 
                   onClick={() => setShowAlertModal(false)}
                   className="p-2 hover:bg-white/5 rounded-full transition-colors"
@@ -251,31 +340,90 @@ export default function Page() {
                 </button>
               </div>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="text-[10px] font-mono text-purple-400 uppercase tracking-widest mb-1.5 block">Telegram Username</label>
-                  <input 
-                    type="text" 
-                    placeholder="@trader_pro" 
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-purple-500/50 transition-colors"
-                  />
+              {/* VIEW 1: CONNECT */}
+              {!isConnected ? (
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-[10px] font-mono text-purple-400 uppercase tracking-widest mb-1.5 block">Telegram Username</label>
+                    <input 
+                      type="text" 
+                      value={tgUsername}
+                      onChange={(e) => setTgUsername(e.target.value)}
+                      placeholder="@trader_pro" 
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-purple-500/50 transition-colors placeholder:text-white/20"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-mono text-purple-400 uppercase tracking-widest mb-1.5 block">Chat ID (from @userinfobot)</label>
+                    <input 
+                      type="text" 
+                      value={tgChatId}
+                      onChange={(e) => setTgChatId(e.target.value)}
+                      placeholder="987654321" 
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-purple-500/50 transition-colors placeholder:text-white/20"
+                    />
+                  </div>
+                  
+                  {status === 'ERROR' && (
+                    <div className="text-red-400 text-xs font-mono text-center bg-red-500/10 py-2 rounded-lg border border-red-500/20">
+                      {errorMsg}
+                    </div>
+                  )}
+
+                  <button 
+                    onClick={handleActivateAlerts}
+                    disabled={status === 'LOADING'}
+                    className={`w-full mt-4 py-4 rounded-2xl font-black italic tracking-widest text-sm transition-all active:scale-[0.98]
+                      ${status === 'LOADING' ? 'bg-purple-900 text-white/50 cursor-wait' : 
+                        'bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:opacity-90'}
+                    `}
+                  >
+                    {status === 'LOADING' ? 'CONNECTING...' : 'ACTIVATE_WEBHOOK'}
+                  </button>
                 </div>
-                <div>
-                  <label className="text-[10px] font-mono text-purple-400 uppercase tracking-widest mb-1.5 block">Chat ID</label>
-                  <input 
-                    type="text" 
-                    placeholder="987654321" 
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-purple-500/50 transition-colors"
-                  />
+              ) : (
+                /* VIEW 2: WATCHLIST (This appears after connection) */
+                <div className="space-y-6">
+                  <div className="bg-green-500/10 border border-green-500/20 p-3 rounded-xl flex items-center gap-3">
+                    <div className="p-1 bg-green-500 text-black rounded-full"><IconCheck size={14} stroke={3} /></div>
+                    <div className="text-xs text-green-300 font-mono">
+                      Connected as <span className="font-bold text-white">@{tgUsername.replace('@','')}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                     <label className="text-[10px] font-mono text-purple-400 uppercase tracking-widest mb-1.5 block">Add Keyword to Monitor</label>
+                     <div className="flex gap-2">
+                        <input 
+                          type="text" 
+                          value={newKeyword}
+                          onChange={(e) => setNewKeyword(e.target.value)}
+                          placeholder="e.g. Gold, Tesla, Bitcoin" 
+                          className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-purple-500/50 transition-colors"
+                        />
+                        <button 
+                          onClick={handleAddToWatchlist}
+                          className="bg-white/10 hover:bg-white/20 border border-white/10 text-white p-3 rounded-xl transition-colors"
+                        >
+                          <IconPlus size={20} />
+                        </button>
+                     </div>
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-mono text-white/30 uppercase tracking-widest mb-2 block">Active Watchlist</label>
+                    <div className="flex flex-wrap gap-2">
+                        {watchlist.length > 0 ? watchlist.map((item, i) => (
+                           <span key={i} className="px-3 py-1 bg-purple-500/20 border border-purple-500/30 text-purple-300 text-xs rounded-lg font-bold">
+                             {item}
+                           </span>
+                        )) : (
+                          <span className="text-white/20 text-xs italic">No keywords added yet.</span>
+                        )}
+                    </div>
+                  </div>
                 </div>
-                
-                <button 
-                  onClick={() => setShowAlertModal(false)}
-                  className="w-full mt-4 py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black italic tracking-widest text-sm hover:opacity-90 transition-all active:scale-[0.98]"
-                >
-                  ACTIVATE_WEBHOOK
-                </button>
-              </div>
+              )}
             </motion.div>
           </div>
         )}
