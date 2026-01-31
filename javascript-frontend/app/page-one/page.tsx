@@ -1,9 +1,8 @@
 "use client"
 
 import React, { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion' // Added AnimatePresence
 import Lottie from 'lottie-react'
-// Import useRouter for navigation
 import { useRouter } from 'next/navigation' 
 import { 
   IconArrowUpRight, 
@@ -12,16 +11,20 @@ import {
   IconBolt,
   IconTrendingUp,
   IconChartBar,
-  IconBell
+  IconBell,
+  IconX // Added X icon for closing
 } from '@tabler/icons-react'
 
 export default function Page() {
-  const router = useRouter(); // Initialize the router
+  const router = useRouter();
 
   const [traderLottie, setTraderLottie] = useState(null);
   const [bullishLottie, setBullishLottie] = useState(null);
   const [bearLottie, setBearLottie] = useState(null); 
   const [bnbLottie, setBnbLottie] = useState(null); 
+  
+  // --- New State for Fake Modal ---
+  const [showAlertModal, setShowAlertModal] = useState(false);
 
   useEffect(() => {
     fetch('/blockchain-technology.json').then((res) => res.json()).then((data) => setTraderLottie(data));
@@ -70,7 +73,7 @@ export default function Page() {
 
       <div className="flex-1 grid grid-cols-1 md:grid-cols-12 grid-rows-6 gap-6 min-h-0 z-10 w-full">
         
-        {/* --- LEFT: BEARISH CARD (Page Three) --- */}
+        {/* --- LEFT: BEARISH CARD --- */}
         <motion.div 
           onClick={() => router.push('/page-three')}
           whileHover={{ scale: 0.99 }}
@@ -103,7 +106,7 @@ export default function Page() {
           </div>
         </motion.div>
 
-        {/* --- RIGHT TOP: BULLISH CARD (Page Two) --- */}
+        {/* --- RIGHT TOP: BULLISH CARD --- */}
         <motion.div 
           onClick={() => router.push('/page-two')}
           whileHover={{ scale: 0.99 }}
@@ -147,7 +150,7 @@ export default function Page() {
           </div>
         </motion.div>
 
-        {/* --- RIGHT BOTTOM: TRADER'S DILEMMA (Page Four) --- */}
+        {/* --- RIGHT BOTTOM: TRADER'S DILEMMA --- */}
         <motion.div 
           onClick={() => router.push('/page-four')}
           whileHover={{ scale: 0.99 }}
@@ -207,14 +210,76 @@ export default function Page() {
                 <button className="w-full py-3 rounded-xl bg-white text-black font-bold text-xs hover:bg-purple-400 hover:scale-[1.02] transition-all flex items-center justify-center gap-2">
                   <IconChartBar size={16} /> Portfolio
                 </button>
-                <button className="w-full py-3 rounded-xl bg-white/5 text-white font-bold text-xs hover:bg-white/10 border border-white/10 transition-all backdrop-blur-sm flex items-center justify-center gap-2">
+                {/* Updated Alerts Button */}
+                <button 
+                  onClick={() => setShowAlertModal(true)}
+                  className="w-full py-3 rounded-xl bg-white/5 text-white font-bold text-xs hover:bg-white/10 border border-white/10 transition-all backdrop-blur-sm flex items-center justify-center gap-2"
+                >
                   <IconBell size={16} /> Alerts
                 </button>
              </div>
           </div>
         </div>
-
       </div>
+
+      {/* --- FAKE MODAL FOR HACKATHON --- */}
+      <AnimatePresence>
+        {showAlertModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowAlertModal(false)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="relative w-full max-w-md bg-[#111] border border-white/10 rounded-[2.5rem] p-8 shadow-2xl overflow-hidden"
+            >
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-50" />
+              
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-black italic text-white tracking-tight">CONFIGURE ALERTS</h3>
+                <button 
+                  onClick={() => setShowAlertModal(false)}
+                  className="p-2 hover:bg-white/5 rounded-full transition-colors"
+                >
+                  <IconX size={20} className="text-white/40" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="text-[10px] font-mono text-purple-400 uppercase tracking-widest mb-1.5 block">Telegram Username</label>
+                  <input 
+                    type="text" 
+                    placeholder="@trader_pro" 
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-purple-500/50 transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-mono text-purple-400 uppercase tracking-widest mb-1.5 block">Chat ID</label>
+                  <input 
+                    type="text" 
+                    placeholder="987654321" 
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-purple-500/50 transition-colors"
+                  />
+                </div>
+                
+                <button 
+                  onClick={() => setShowAlertModal(false)}
+                  className="w-full mt-4 py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black italic tracking-widest text-sm hover:opacity-90 transition-all active:scale-[0.98]"
+                >
+                  ACTIVATE_WEBHOOK
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </main>
   )
 }
