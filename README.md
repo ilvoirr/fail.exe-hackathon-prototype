@@ -1,68 +1,73 @@
-# MONITOR 110: HIGH-FREQUENCY SENTIMENT ENGINE
+# MONITOR 110: THE SENTIMENT COMMAND CENTER
 
-### Advanced Financial Intelligence and Temporal Market Analysis
+### [LIVE PROTOTYPE](https://fail-exe-hackathon-prototype-mvx2.vercel.app/)
 
-MONITOR 110 is a high-performance financial dashboard designed to bridge the gap between technical indicators and market psychology. By leveraging real-time sentiment mapping and voice-activated intelligence, it provides a command-center experience for modern asset management.
-
-![Main Interface](./javascript-frontend/public/1.png)
+MONITOR 110 is a high-performance financial intelligence terminal engineered for low-latency market analysis. It bridges the gap between raw quantitative data and qualitative market psychology through temporal sentiment mapping and a high-fidelity, interruptible voice interface.
 
 ---
 
-## SYSTEM ARCHITECTURE
+## EXECUTIVE VISUAL OVERVIEW
 
-* **Frontend Framework:** Next.js 14 (App Router)
-* **Animation Engine:** Framer Motion and Lottie-React
-* **Design System:** Ultra-dark Glassmorphism with Tailwind CSS
-* **Intelligence Layer:** Temporal Sentiment Logic and Voice Command Interface
+![Landing Page](./javascript-frontend/public/1.png)
 
 ---
 
-## CORE FEATURES
+## CORE CAPABILITIES
 
-### 1. TEMPORAL SENTIMENT MAPPING
-The engine categorizes market states into three distinct visual and logical layers:
+### 1. HIGH-FIDELITY SENTIMENT TERMINAL
+The main dashboard utilizes a custom-engineered visual layer to represent market volatility. By integrating Lottie-driven liquid animations and Framer Motion state transitions, the UI physically reacts to market shifts in real-time.
 
-* **BULLISH ACCUMULATION:** High-intensity green pulse animations coupled with dynamic bar charts representing strong buying pressure.
-* **BEARISH DISTRIBUTION:** High-contrast red visual cues triggered by "MKKT_SENTIMENT_SHORT" logic, signaling high selling pressure.
-* **TRADER'S DILEMMA:** A unique psychological layer that analyzes the emotional friction points during high-volatility events.
+![Main Dashboard](./javascript-frontend/public/2.png)
 
-### 2. VOICE-ACTIVATED FINANCIAL ASSISTANT
-A dedicated voice interface allows for hands-free temporal analysis. Users can query the system for historical sentiment trends and rapid market summaries without manual input.
+### 2. TEMPORAL SENTIMENT ANALYSIS
+The engine splits market intelligence into distinct temporal layers, allowing for precise identification of accumulation and distribution phases.
 
-### 3. LIGHTNING ACTIONS
-A zero-latency gateway for managing portfolios and configuring web-hooked alerts via Telegram, ensuring that critical market shifts are communicated instantly.
-
----
-
-## INTERFACE PREVIEW
+* **BULLISH SENTIMENT LAYER:** Tracks aggressive buying pressure and liquidity inflow through high-intensity visual pulses.
+* **BEARISH SENTIMENT LAYER:** Identifies distribution patterns and selling pressure using high-contrast visual cues for rapid decision-making.
 
 <div align="center">
-  <img src="./javascript-frontend/public/2.png" width="32%" />
-  <img src="./javascript-frontend/public/3.png" width="32%" />
-  <img src="./javascript-frontend/public/4.png" width="32%" />
+  <img src="./javascript-frontend/public/3.png" width="48%" alt="Bullish Analysis" />
+  <img src="./javascript-frontend/public/4.png" width="48%" alt="Bearish Analysis" />
 </div>
+
+### 3. INTERRUPTIBLE VOICE INTELLIGENCE
+A fully functional, turn-based financial assistant designed for hands-free operation. The system features low-latency, interruptible voice chat, allowing users to query complex financial data and receive spatial analysis without manual input.
+
+![Voice Chat Interface](./javascript-frontend/public/5.png)
+
+### 4. AUTOMATED TELEGRAM SURVEILLANCE
+A robust alert system that monitors watchlisted ETFs and precious metals. The system triggers instant notifications for significant price movements, ensuring zero-latency awareness of market crashes or breakouts.
+
+![Telegram Alerts](./javascript-frontend/public/6.jpeg)
 
 ---
 
-## TECHNICAL IMPLEMENTATION
+## TECHNICAL ARCHITECTURE
 
-### TEMPORAL ANALYSIS LOGIC
-The system utilizes a custom "use client" architecture to manage real-time state transitions without page reloads. The interface reacts to data streams through:
+### REPOSITORY STRUCTURE
 
-* **Framer Motion:** Handles the high-frequency UI transitions and "pulse" effects.
-* **Lottie-React:** Renders complex vector animations that represent market volatility (Bull/Bear states).
-* **SVG Noise Filtering:** A custom overlay used to provide a tactical, high-contrast aesthetic that reduces cognitive load during long trading sessions.
+* **/javascript-frontend:** A Next.js 14 application leveraging "use client" for high-performance state management and ultra-smooth UI transitions.
+* **/PythonBackend:** A dedicated Python engine handling real-time data processing, requirements management, and temporal logic.
+
+---
+
+## THE TECH STACK
+
+| COMPONENT | TECHNOLOGY |
+| :--- | :--- |
+| **Frontend Framework** | Next.js 14 (App Router) |
+| **Animation Engine** | Framer Motion + Lottie-React |
+| **Styling** | Tailwind CSS (Ultra-Dark Glassmorphism) |
+| **Authentication** | Clerk Integration |
+| **Backend** | Python 3.x |
+| **Alerting** | Telegram Webhook API |
 
 ---
 
 ## INSTALLATION AND SETUP
 
+### FRONTEND DEPLOYMENT
 ```bash
-# Navigate to the frontend directory
 cd javascript-frontend
-
-# Install system dependencies
-npm install framer-motion lottie-react @tabler/icons-react
-
-# Launch the development server
+npm install
 npm run dev
