@@ -64,6 +64,14 @@ A robust alert system that monitors watchlisted ETFs and precious metals. The sy
 
 ---
 
+## ASSETS USED 
+I have utilised LottieJson Animation created by Skilled users like : 
+https://iconscout.com/contributors/graphic-room
+https://iconscout.com/contributors/danimotion
+https://iconscout.com/contributors/graphichup
+https://iconscout.com/contributors/nanoagency
+check them out !!
+
 ## INSTALLATION AND SETUP
 
 ### FRONTEND DEPLOYMENT
